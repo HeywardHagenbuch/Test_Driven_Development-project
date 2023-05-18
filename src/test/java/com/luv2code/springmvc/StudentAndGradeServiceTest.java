@@ -48,7 +48,11 @@ public class StudentAndGradeServiceTest {
 
     @BeforeEach
     public void setUp() {
-        jdbcTemplate.execute("insert into STUDENT(FIRST_NAME, LAST_NAME, EMAIL_ADDRESS) values ('Eric', 'Roby', 'eric.roby@luv2code_school.com')");
+        jdbcTemplate.execute("insert into STUDENT(ID, FIRST_NAME, LAST_NAME, EMAIL_ADDRESS) values (1, 'Eric', 'Roby', 'eric.roby@luv2code_school.com')");
+        jdbcTemplate.execute("insert into math_grade(student_id, grade) values (1, 90.05)");
+        jdbcTemplate.execute("insert into science_grade(student_id, grade) values (1, 70.05)");
+        jdbcTemplate.execute("insert into history_grade(student_id, grade) values (1, 80.55)");
+
     }
 
     @Test
@@ -83,20 +87,20 @@ public class StudentAndGradeServiceTest {
         for (CollegeStudent student: iterableCollegeStudent){
             studentList.add(student);
         }
-        assertEquals(6, studentList.size(), "student list size");
+        assertEquals(5, studentList.size(), "student list size");
     }
 
     @Test
     public void createGradeService(){
         // create a grade for a student, takes in grade, student id, and course
-        assertTrue(studentService.createGrade(80.50, 2, "math"));
-        assertTrue(studentService.createGrade(90.50, 2, "science"));
-        assertTrue(studentService.createGrade(79.50, 2, "history"));
+        assertTrue(studentService.createGrade(80.50, 1, "math"));
+        assertTrue(studentService.createGrade(90.50, 1, "science"));
+        assertTrue(studentService.createGrade(79.50, 1, "history"));
 
         //Get all the grades with student id
-        Iterable<MathGrade> mathGrades = mathGradesDao.findMathGradeByStudentId(2);
-        Iterable<ScienceGrade>scienceGrades = scienceGradesDao.findScienceGradeByStudentId(2);
-        Iterable<HistoryGrade>historyGrades = historyGradesDao.findHistoryGradeByStudentId(2);
+        Iterable<MathGrade> mathGrades = mathGradesDao.findMathGradeByStudentId(1);
+        Iterable<ScienceGrade>scienceGrades = scienceGradesDao.findScienceGradeByStudentId(1);
+        Iterable<HistoryGrade>historyGrades = historyGradesDao.findHistoryGradeByStudentId(1);
 
         //verify there is a grade with the student id
         assertTrue(mathGrades.iterator().hasNext(), "Student has a math grade");
@@ -115,6 +119,9 @@ public class StudentAndGradeServiceTest {
 
     @AfterEach
     public void tearDown() {
-        jdbcTemplate.execute("delete from student where email_address = 'eric.roby@luv2code_school.com'");
+        jdbcTemplate.execute("delete from student");
+        jdbcTemplate.execute("delete from math_grade");
+        jdbcTemplate.execute("delete from science_grade");
+        jdbcTemplate.execute("delete from history_grade");
     }
 }
